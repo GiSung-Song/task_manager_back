@@ -1,6 +1,6 @@
 package com.taskmanager.myapp.domain;
 
-import com.taskmanager.myapp.global.BaseTimeEntity;
+import com.taskmanager.myapp.config.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,7 +19,7 @@ public class Departments extends BaseTimeEntity {
     @Column(nullable = false, unique = true)
     private String departmentName;
 
-    public static Departments of(String departmentName) {
+    public static Departments createDepartments(String departmentName) {
         Departments departments = new Departments();
 
         departments.setDepartmentName(departmentName);

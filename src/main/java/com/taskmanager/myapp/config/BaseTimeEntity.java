@@ -1,4 +1,4 @@
-package com.taskmanager.myapp.global;
+package com.taskmanager.myapp.config;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

@@ -1,14 +1,14 @@
 package com.taskmanager.myapp.domain;
 
-import com.taskmanager.myapp.global.BaseTimeEntity;
+import com.taskmanager.myapp.config.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Users extends BaseTimeEntity {
 
     @Id
@@ -28,11 +28,11 @@ public class Users extends BaseTimeEntity {
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "department_id", nullable = false)
     private Departments department;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     private Roles role;
 }
