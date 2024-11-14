@@ -7,6 +7,8 @@ spring:
   config:
     import:
       - application-mysql.yml
+      - application-jwt.yml
+      - application-redis.yml
 logging:
   level:
     com.taskmanager.myapp: INFO

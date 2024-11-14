@@ -1,4 +1,4 @@
-package com.taskmanager.myapp.dto;
+package com.taskmanager.myapp.dto.users;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

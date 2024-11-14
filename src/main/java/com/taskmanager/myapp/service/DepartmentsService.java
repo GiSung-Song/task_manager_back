@@ -1,7 +1,7 @@
 package com.taskmanager.myapp.service;
 
 import com.taskmanager.myapp.domain.Departments;
-import com.taskmanager.myapp.dto.DepartmentsDto;
+import com.taskmanager.myapp.dto.departments.DepartmentsDto;
 import com.taskmanager.myapp.repository.DepartmentsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

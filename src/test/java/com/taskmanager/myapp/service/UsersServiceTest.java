@@ -2,7 +2,7 @@ package com.taskmanager.myapp.service;
 
 import com.taskmanager.myapp.domain.Departments;
 import com.taskmanager.myapp.domain.Roles;
-import com.taskmanager.myapp.dto.UserRegisterRequestDto;
+import com.taskmanager.myapp.dto.users.UserRegisterRequestDto;
 import com.taskmanager.myapp.exception.DataConflictException;
 import com.taskmanager.myapp.exception.ResourceNotfoundException;
 import com.taskmanager.myapp.repository.DepartmentsRepository;

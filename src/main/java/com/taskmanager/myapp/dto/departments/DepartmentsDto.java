@@ -1,4 +1,4 @@
-package com.taskmanager.myapp.dto;
+package com.taskmanager.myapp.dto.departments;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

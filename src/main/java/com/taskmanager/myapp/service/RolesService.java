@@ -1,7 +1,7 @@
 package com.taskmanager.myapp.service;
 
 import com.taskmanager.myapp.domain.Roles;
-import com.taskmanager.myapp.dto.RolesDto;
+import com.taskmanager.myapp.dto.roles.RolesDto;
 import com.taskmanager.myapp.repository.RolesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,7 @@
 package com.taskmanager.myapp.controller;
 
-import com.taskmanager.myapp.dto.RolesDto;
+import com.taskmanager.myapp.dto.roles.RolesDto;
+import com.taskmanager.myapp.global.CustomResponse;
 import com.taskmanager.myapp.service.RolesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +19,10 @@ public class RolesController {
     private final RolesService rolesService;
 
     @GetMapping("/roles")
-    public ResponseEntity<List<RolesDto>> getAllRoles() {
+    public ResponseEntity<CustomResponse<List<RolesDto>>> getAllRoles() {
         List<RolesDto> rolesDtoList = rolesService.getAllRoles();
 
-        return ResponseEntity.ok(rolesDtoList);
+        return ResponseEntity.ok(CustomResponse.res(rolesDtoList, "Get All Roles Successfully"));
     }
 
 }

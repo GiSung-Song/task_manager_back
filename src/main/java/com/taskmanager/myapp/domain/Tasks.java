@@ -2,17 +2,17 @@ package com.taskmanager.myapp.domain;
 
 import com.taskmanager.myapp.domain.enums.TaskPriority;
 import com.taskmanager.myapp.domain.enums.TaskStatus;
+import com.taskmanager.myapp.domain.enums.TaskType;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.apache.catalina.User;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Tasks {
 
     @Id
@@ -27,18 +27,39 @@ public class Tasks {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TaskStatus status = TaskStatus.PENDING;
+    private TaskStatus status;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TaskPriority priority = TaskPriority.MEDIUM;
+    private TaskPriority priority;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TaskType taskType;
 
     private LocalDateTime deadline;
 
     @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
     @ManyToOne
+    @JoinColumn(name = "department_id", nullable = false)
     private Departments department;
 
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void updatePriority(TaskPriority priority) {
+        this.priority = priority;
+    }
+
+    public void updateDeadline(LocalDateTime deadline) {
+        this.deadline = deadline;
+    }
+
+    public void updateStatus(TaskStatus status) {
+        this.status = status;
+    }
 }

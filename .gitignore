@@ -38,3 +38,5 @@ out/
 
 ### properties ###
 application-mysql.yml
+application-redis.yml
+application-jwt.yml

@@ -1,7 +1,6 @@
 package com.taskmanager.myapp.global;
 
-import com.taskmanager.myapp.exception.DataConflictException;
-import com.taskmanager.myapp.exception.ResourceNotfoundException;
+import com.taskmanager.myapp.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -25,6 +24,30 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataConflictException.class)
     public ResponseEntity<Map<String, String>> handleDataConflictException(DataConflictException exception) {
         return createErrorResponse(exception.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    // auth exception
+    @ExceptionHandler(CustomAuthException.class)
+    public ResponseEntity<Map<String, String>> handleAuthException(CustomAuthException exception) {
+        return createErrorResponse(exception.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    // 403 exception
+    @ExceptionHandler(CustomDeniedException.class)
+    public ResponseEntity<Map<String, String>> handleDeniedException(CustomDeniedException exception) {
+        return createErrorResponse(exception.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    // BadRequest exception
+    @ExceptionHandler(CustomBadRequestException.class)
+    public ResponseEntity<Map<String, String>> handleBadRequestException(CustomBadRequestException exception) {
+        return createErrorResponse(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    // Internal exception
+    @ExceptionHandler(CustomInternalException.class)
+    public ResponseEntity<Map<String, String>> handleInternalException(CustomInternalException exception) {
+        return createErrorResponse(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     // validation exception

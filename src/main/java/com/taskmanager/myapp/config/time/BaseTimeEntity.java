@@ -1,4 +1,4 @@
-package com.taskmanager.myapp.config;
+package com.taskmanager.myapp.config.time;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

@@ -1,6 +1,6 @@
 package com.taskmanager.myapp.domain;
 
-import com.taskmanager.myapp.config.BaseTimeEntity;
+import com.taskmanager.myapp.config.time.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
