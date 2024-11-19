@@ -11,9 +11,7 @@ import com.taskmanager.myapp.exception.CustomDeniedException;
 import com.taskmanager.myapp.exception.ResourceNotfoundException;
 import com.taskmanager.myapp.global.TaskOwnerCheck;
 import com.taskmanager.myapp.repository.TasksRepository;
-import com.taskmanager.myapp.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -27,21 +25,21 @@ import java.util.stream.Collectors;
 public class TasksService {
 
     private final TasksRepository tasksRepository;
-    private final UsersRepository usersRepository;
+    private final SecurityService securityService;
 
     // 업무 생성
     @Transactional
     public void addTask(TaskRegisterRequestDto dto) {
-        Users user = getLoginUser();
+        Users user = securityService.getLoginUser();
 
         TaskStatus taskStatus = dto.getTaskStatus() != null ? TaskStatus.valueOf(dto.getTaskStatus()) : TaskStatus.PENDING;
         TaskPriority priority = dto.getTaskPriority() != null ? TaskPriority.valueOf(dto.getTaskPriority()) : TaskPriority.MEDIUM;
         TaskType taskType = dto.getTaskType() != null ? TaskType.valueOf(dto.getTaskType()) : TaskType.PERSONAL;
         LocalDateTime deadline = dto.getDeadline() != null ? dto.getDeadline() : LocalDateTime.now().plusDays(1);
 
-        // 부장이 아니면 부서 전체 업무 추가 불가능
+        // Role Level 3이하면 부서 전체 업무 추가 불가능
         if (taskType == TaskType.TEAM) {
-            if (!user.getRole().getRoleName().equals("부장")) {
+            if (user.getRole().getLevel() <= 3) {
                 throw new CustomDeniedException("Don't have access authority");
             }
         }
@@ -62,7 +60,7 @@ public class TasksService {
 
     // 업무 조회 - 해당 달력의 업무
     public List<TaskResponseDto> getAllTask(TaskDateDto dto) {
-        Users user = getLoginUser();
+        Users user = securityService.getLoginUser();
         Departments department = user.getDepartment();
 
         List<Tasks> tasksList = tasksRepository.findAllTask(user.getId(), dto.getStartDate(), dto.getEndDate());
@@ -126,18 +124,6 @@ public class TasksService {
                 .orElseThrow(() -> new ResourceNotfoundException("Invalid Task ID"));
 
         tasksRepository.delete(task);
-    }
-
-    private Users getLoginUser() {
-        String employeeNumber = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        Users user = usersRepository.findByEmployeeNumber(employeeNumber);
-
-        if (user == null) {
-            throw new ResourceNotfoundException("Invalid User");
-        }
-
-        return user;
     }
 
 }

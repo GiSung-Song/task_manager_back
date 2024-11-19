@@ -19,15 +19,22 @@ public class Roles extends BaseTimeEntity {
     @Column(nullable = false, unique = true)
     private String roleName;
 
-    public static Roles createRoles(String roleName) {
+    @Column(nullable = false)
+    private int level;
+
+    public static Roles createRoles(String roleName, int level) {
         Roles roles = new Roles();
 
         roles.setRoleName(roleName);
+        roles.setLevel(level);
 
         return roles;
     }
 
     private void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+    private void setLevel(int level) {
+        this.level = level;
     }
 }

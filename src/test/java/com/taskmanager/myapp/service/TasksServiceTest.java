@@ -11,23 +11,19 @@ import com.taskmanager.myapp.dto.tasks.*;
 import com.taskmanager.myapp.exception.CustomDeniedException;
 import com.taskmanager.myapp.exception.ResourceNotfoundException;
 import com.taskmanager.myapp.repository.TasksRepository;
-import com.taskmanager.myapp.repository.UsersRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,21 +37,12 @@ class TasksServiceTest {
     private TasksRepository tasksRepository;
 
     @Mock
-    private UsersRepository usersRepository;
-
-    void setUp() {
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("12345");
-
-        SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
-    }
+    private SecurityService securityService;
 
     private Users getUser() {
         return Users.builder()
                 .id(0L)
-                .role(Roles.createRoles("차장"))
+                .role(Roles.createRoles("차장", 1))
                 .department(Departments.createDepartments("개발1팀"))
                 .username("테스터")
                 .phoneNumber("01012345678")
@@ -66,9 +53,8 @@ class TasksServiceTest {
 
     @Test
     void 업무_등록_테스트() {
-        setUp();
         Users user = getUser();
-        when(usersRepository.findByEmployeeNumber("12345")).thenReturn(user);
+        when(securityService.getLoginUser()).thenReturn(user);
 
         TaskRegisterRequestDto dto = new TaskRegisterRequestDto();
 
@@ -82,9 +68,8 @@ class TasksServiceTest {
 
     @Test
     void 업무_등록_실패_테스트() {
-        setUp();
         Users user = getUser();
-        when(usersRepository.findByEmployeeNumber("12345")).thenReturn(user);
+        when(securityService.getLoginUser()).thenReturn(user);
 
         TaskRegisterRequestDto dto = new TaskRegisterRequestDto();
 
@@ -97,9 +82,8 @@ class TasksServiceTest {
 
     @Test
     void 업무_조회_테스트() {
-        setUp();
         Users user = getUser();
-        when(usersRepository.findByEmployeeNumber("12345")).thenReturn(user);
+        when(securityService.getLoginUser()).thenReturn(user);
         Departments departments = Departments.createDepartments("개발 1팀");
 
         Tasks task1 = Tasks.builder()
@@ -125,10 +109,11 @@ class TasksServiceTest {
                 .build();
 
         TaskDateDto dto = new TaskDateDto();
-        dto.setStartDate(LocalDateTime.now());
-        dto.setEndDate(LocalDateTime.now().plusDays(2));
+        LocalDateTime now = LocalDateTime.now();
+        dto.setStartDate(now);
+        dto.setEndDate(now.plusDays(2));
 
-        when(tasksRepository.findAllTask(user.getId(), LocalDateTime.now(), LocalDateTime.now().plusDays(2))).thenReturn(List.of(task1, task2));
+        when(tasksRepository.findAllTask(user.getId(), now, now.plusDays(2))).thenReturn(List.of(task1, task2));
 
         List<TaskResponseDto> allTask = tasksService.getAllTask(dto);
 

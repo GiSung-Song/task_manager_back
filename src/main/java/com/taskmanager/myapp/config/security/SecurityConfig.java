@@ -1,7 +1,6 @@
 package com.taskmanager.myapp.config.security;
 
 import com.taskmanager.myapp.config.cors.CorsConfig;
-import com.taskmanager.myapp.config.jwt.CustomUserDetailsService;
 import com.taskmanager.myapp.config.jwt.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

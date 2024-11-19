@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.TimeUnit;
 
@@ -31,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Transactional
 public class AuthIntegrationTest {
 
     @Autowired
@@ -56,7 +58,7 @@ public class AuthIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        Roles role = rolesRepository.save(Roles.createRoles("사장"));
+        Roles role = rolesRepository.save(Roles.createRoles("사장", 5));
         Departments depart = departmentsRepository.save(Departments.createDepartments("개발1팀"));
 
         Users user = Users.builder()

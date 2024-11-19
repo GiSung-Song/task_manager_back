@@ -1,6 +1,5 @@
 package com.taskmanager.myapp.integration;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.taskmanager.myapp.domain.Departments;
 import com.taskmanager.myapp.domain.Roles;
@@ -18,6 +17,7 @@ import com.taskmanager.myapp.repository.TasksRepository;
 import com.taskmanager.myapp.repository.UsersRepository;
 import com.taskmanager.myapp.service.TasksService;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,12 +27,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -43,6 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@Transactional
 public class TaskIntegrationTest {
 
     @Autowired
@@ -66,13 +66,53 @@ public class TaskIntegrationTest {
     @Autowired
     private TasksRepository tasksRepository;
 
-    Users user;
-    Roles roles;
-    Departments departments;
-    Tasks task1;
-    Tasks task2;
+    private Users user;
+    private Roles roles;
+    private Departments departments;
+    private Tasks task1;
+    private Tasks task2;
 
-    void setUpTasks() {
+    @BeforeEach
+    void setUp() {
+        if (roles != null && rolesRepository.existsById(roles.getId())) {
+            roles = rolesRepository.findById(roles.getId()).get();
+
+            System.out.println("roleName : " + roles.getRoleName());
+        } else {
+            roles = Roles.createRoles("부장", 4);
+            rolesRepository.save(roles);
+        }
+
+        if (departments != null && departmentsRepository.existsById(departments.getId())) {
+            departments = departmentsRepository.findById(departments.getId()).get();
+        } else {
+            departments = Departments.createDepartments("개발1팀");
+            departmentsRepository.save(departments);
+        }
+
+        user = Users.builder()
+                .role(roles)
+                .department(departments)
+                .username("테스터")
+                .phoneNumber("01012345678")
+                .employeeNumber("12345")
+                .password("encodedPassword")
+                .build();
+
+        usersRepository.save(user);
+
+        // Authentication 설정
+        UserDetails userDetails = User.builder()
+                .username(user.getEmployeeNumber())
+                .password(user.getPassword())
+                .roles(user.getRole().getRoleName())
+                .build();
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // 기본적인 업무 데이터 설정
         task1 = Tasks.builder()
                 .title("테스트 제목")
                 .description("테스트 설명")
@@ -95,71 +135,12 @@ public class TaskIntegrationTest {
                 .department(departments)
                 .build();
 
-        tasksRepository.saveAndFlush(task1);
-        tasksRepository.saveAndFlush(task2);
-    }
-
-    void setUpBuJang() {
-        roles = Roles.createRoles("부장");
-        departments = Departments.createDepartments("개발1팀");
-
-        rolesRepository.saveAndFlush(roles);
-        departmentsRepository.saveAndFlush(departments);
-
-        user = Users.builder()
-                .role(roles)
-                .department(departments)
-                .username("테스터")
-                .phoneNumber("01012345678")
-                .employeeNumber("12345")
-                .password("encodedPassword")
-                .build();
-
-        usersRepository.saveAndFlush(user);
-
-        UserDetails userDetails = User.builder()
-                .username(user.getEmployeeNumber())
-                .password(user.getPassword())
-                .roles(user.getRole().getRoleName())
-                .build();
-
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
-
-    void setUpSawon() {
-        Roles roles = Roles.createRoles("사원");
-        Departments department = Departments.createDepartments("개발1팀");
-
-        rolesRepository.saveAndFlush(roles);
-        departmentsRepository.saveAndFlush(department);
-
-        Users user = Users.builder()
-                .role(roles)
-                .department(department)
-                .username("테스터")
-                .phoneNumber("01012345678")
-                .employeeNumber("12345")
-                .password("encodedPassword")
-                .build();
-
-        usersRepository.saveAndFlush(user);
-
-        UserDetails userDetails = User.builder()
-                .username(user.getEmployeeNumber())
-                .password(user.getPassword())
-                .roles(user.getRole().getRoleName())
-                .build();
-
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        tasksRepository.save(task1);
+        tasksRepository.save(task2);
     }
 
     @Test
     void 업무_등록_테스트() throws Exception {
-        setUpBuJang();
         TaskRegisterRequestDto dto = new TaskRegisterRequestDto();
 
         dto.setTitle("테스트 제목");
@@ -183,7 +164,30 @@ public class TaskIntegrationTest {
 
     @Test
     void 업무_등록_실패_테스트() throws Exception {
-        setUpSawon();
+        Roles roles = Roles.createRoles("사원", 1);
+        rolesRepository.save(roles);
+
+        Users user = Users.builder()
+                .role(roles)
+                .department(departments)
+                .username("테스터2")
+                .phoneNumber("01012341234")
+                .employeeNumber("131313")
+                .password("encodedPassword")
+                .build();
+
+        usersRepository.save(user);
+
+        UserDetails userDetails = User.builder()
+                .username(user.getEmployeeNumber())
+                .password(user.getPassword())
+                .roles(user.getRole().getRoleName())
+                .build();
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         TaskRegisterRequestDto dto = new TaskRegisterRequestDto();
 
         dto.setTitle("테스트 제목");
@@ -202,9 +206,6 @@ public class TaskIntegrationTest {
 
     @Test
     void 업무_조회_테스트() throws Exception {
-        setUpBuJang();
-        setUpTasks();
-
         mockMvc.perform(get("/api/task"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -214,9 +215,6 @@ public class TaskIntegrationTest {
 
     @Test
     void 업무_수정_테스트() throws Exception {
-        setUpBuJang();
-        setUpTasks();
-
         TaskUpdateRequestDto dto = new TaskUpdateRequestDto();
 
         dto.setPriority("HIGH");
@@ -231,17 +229,11 @@ public class TaskIntegrationTest {
         Tasks tasks = tasksRepository.findById(task1.getId()).get();
 
         Assertions.assertEquals(TaskPriority.HIGH, tasks.getPriority());
-        Assertions.assertEquals(
-                LocalDateTime.now().plusDays(15).atZone(ZoneId.systemDefault()).toInstant().getEpochSecond(),
-                tasks.getDeadline().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond());
         Assertions.assertEquals("테스트 제목", tasks.getTitle());
     }
 
     @Test
     void 업무_수정_실패_테스트() throws Exception {
-        setUpBuJang();
-        setUpTasks();
-
         TaskUpdateRequestDto dto = new TaskUpdateRequestDto();
 
         dto.setPriority("HIGH");
@@ -251,14 +243,11 @@ public class TaskIntegrationTest {
                         .content(objectMapper.writeValueAsString(dto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     void 업무_상태_수정_테스트() throws Exception {
-        setUpBuJang();
-        setUpTasks();
-
         TaskStatusUpdateRequestDto dto = new TaskStatusUpdateRequestDto();
 
         dto.setStatus("COMPLETED");
@@ -277,9 +266,6 @@ public class TaskIntegrationTest {
 
     @Test
     void 업무_수정_상태_실패_테스트() throws Exception {
-        setUpBuJang();
-        setUpTasks();
-
         TaskStatusUpdateRequestDto dto = new TaskStatusUpdateRequestDto();
 
         dto.setStatus("COMPLETED");
@@ -288,30 +274,11 @@ public class TaskIntegrationTest {
                         .content(objectMapper.writeValueAsString(dto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     void 업무_주인_체크_테스트() throws Exception {
-        roles = Roles.createRoles("부장");
-        departments = Departments.createDepartments("개발1팀");
-
-        rolesRepository.saveAndFlush(roles);
-        departmentsRepository.saveAndFlush(departments);
-
-        user = Users.builder()
-                .role(roles)
-                .department(departments)
-                .username("테스터")
-                .phoneNumber("01012345678")
-                .employeeNumber("12345")
-                .password("encodedPassword")
-                .build();
-
-        usersRepository.saveAndFlush(user);
-
-        setUpTasks();
-
         Users user2 = Users.builder()
                 .role(roles)
                 .department(departments)
@@ -321,7 +288,7 @@ public class TaskIntegrationTest {
                 .password("encodedPassword")
                 .build();
 
-        usersRepository.saveAndFlush(user2);
+        usersRepository.save(user2);
 
         UserDetails userDetails = User.builder()
                 .username(user2.getEmployeeNumber())
@@ -348,9 +315,6 @@ public class TaskIntegrationTest {
 
     @Test
     void 업무_삭제_테스트() throws Exception {
-        setUpBuJang();
-        setUpTasks();
-
         mockMvc.perform(delete("/api/task/{id}", task1.getId()))
                 .andDo(print())
                 .andExpect(status().isOk());

@@ -35,4 +35,12 @@ public class Users extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     private Roles role;
+
+    public void updatePhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }

@@ -1,4 +1,4 @@
-package com.taskmanager.myapp.config.jwt;
+package com.taskmanager.myapp.config.security;
 
 import com.taskmanager.myapp.domain.Users;
 import com.taskmanager.myapp.repository.UsersRepository;

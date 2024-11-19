@@ -7,6 +7,7 @@ import com.taskmanager.myapp.domain.Users;
 import com.taskmanager.myapp.dto.etc.LoginRequestDto;
 import com.taskmanager.myapp.dto.etc.TokenDto;
 import com.taskmanager.myapp.exception.CustomAuthException;
+import com.taskmanager.myapp.exception.CustomBadRequestException;
 import com.taskmanager.myapp.repository.UsersRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,7 +62,7 @@ class AuthServiceTest {
 
         Users user = Users.builder()
                 .id(0L)
-                .role(Roles.createRoles("부장"))
+                .role(Roles.createRoles("부장", 4))
                 .department(Departments.createDepartments("개발1팀"))
                 .username("테스터")
                 .phoneNumber("01012345678")
@@ -93,7 +94,7 @@ class AuthServiceTest {
 
         when(usersRepository.findByEmployeeNumber(employeeNumber)).thenReturn(null);
 
-        assertThrows(CustomAuthException.class, () -> authService.login(dto));
+        assertThrows(CustomBadRequestException.class, () -> authService.login(dto));
     }
 
     @Test
@@ -108,7 +109,7 @@ class AuthServiceTest {
 
         Users user = Users.builder()
                 .id(0L)
-                .role(Roles.createRoles("부장"))
+                .role(Roles.createRoles("부장", 4))
                 .department(Departments.createDepartments("개발1팀"))
                 .username("테스터")
                 .phoneNumber("01012345678")
@@ -119,7 +120,7 @@ class AuthServiceTest {
         when(usersRepository.findByEmployeeNumber(employeeNumber)).thenReturn(user);
         when(passwordEncoder.matches(password, encodedPassword)).thenReturn(false);
 
-        assertThrows(CustomAuthException.class, () -> authService.login(loginRequestDto));
+        assertThrows(CustomBadRequestException.class, () -> authService.login(loginRequestDto));
     }
 
     @Test

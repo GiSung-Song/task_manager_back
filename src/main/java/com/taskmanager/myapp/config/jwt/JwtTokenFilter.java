@@ -1,7 +1,6 @@
 package com.taskmanager.myapp.config.jwt;
 
-import com.taskmanager.myapp.config.jwt.CustomUserDetailsService;
-import com.taskmanager.myapp.config.jwt.JwtTokenUtil;
+import com.taskmanager.myapp.config.security.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 
 @Slf4j
 @Component

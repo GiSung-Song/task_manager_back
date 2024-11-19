@@ -29,9 +29,9 @@ class RolesServiceTest {
     @Test
     @DisplayName("직급 전체 조회")
     void 직급_전체_조회() {
-        Roles role1 = Roles.createRoles("사원");
-        Roles role2 = Roles.createRoles("대리");
-        Roles role3 = Roles.createRoles("과장");
+        Roles role1 = Roles.createRoles("사원", 1);
+        Roles role2 = Roles.createRoles("대리", 2);
+        Roles role3 = Roles.createRoles("과장", 3);
 
         List<Roles> rolesList = List.of(role1, role2, role3);
 
