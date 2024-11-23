@@ -43,13 +43,17 @@ public class UsersService {
         // 1. 본인 정보 조회
         if (user.getId().equals(findUser.getId())) {
             UserInfoResponseDto dto = entityToDto(user);
+            dto.setLoginUserDepartment(user.getDepartment().getDepartmentName());
+            dto.setLoginUserLevel(user.getRole().getLevel());
 
             return dto;
         }
 
         // 2. 인사팀의 경우 모든 정보 조회
-        if (user.getDepartment().getDepartmentName().startsWith("인사")) {
+        if (user.getDepartment().getDepartmentName().startsWith("HR")) {
             UserInfoResponseDto dto = entityToDto(findUser);
+            dto.setLoginUserDepartment(user.getDepartment().getDepartmentName());
+            dto.setLoginUserLevel(user.getRole().getLevel());
 
             return dto;
         }
@@ -76,7 +80,7 @@ public class UsersService {
         }
 
         // 2. 인사팀의 경우 Level4 직급 이상이면 모든 회원의 정보 수정 가능
-        if (user.getDepartment().getDepartmentName().startsWith("인사")) {
+        if (user.getDepartment().getDepartmentName().startsWith("HR")) {
             if (user.getRole().getLevel() >= 4) {
                 findUser.updatePhoneNumber(dto.getPhoneNumber());
 
@@ -119,7 +123,7 @@ public class UsersService {
         }
 
         // 인사팀의 경우 Level4 직급 이상일 때 비밀번호 초기화 가능
-        if (user.getDepartment().getDepartmentName().startsWith("인사")) {
+        if (user.getDepartment().getDepartmentName().startsWith("HR")) {
             if (user.getRole().getLevel() >= 4) {
                 String password = randomPassword();
                 findUser.updatePassword(passwordEncoder.encode(password));

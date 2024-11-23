@@ -67,8 +67,8 @@ public class UserIntegrationTest {
         sawon = Roles.createRoles("사원", 1);
         bujang = Roles.createRoles("부장", 4);
 
-        hr = Departments.createDepartments("인사1팀");
-        dev = Departments.createDepartments("개발1팀");
+        hr = Departments.createDepartments("HR1팀");
+        dev = Departments.createDepartments("DEV1팀");
 
         rolesRepository.save(sawon);
         rolesRepository.save(bujang);

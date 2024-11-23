@@ -14,5 +14,6 @@ public class UserInfoResponseDto {
     private String phoneNumber;
     private String departmentName;
     private String roleName;
-
+    private String loginUserDepartment;
+    private int loginUserLevel;
 }
