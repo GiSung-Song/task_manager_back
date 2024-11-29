@@ -1,4 +1,4 @@
-package com.taskmanager.myapp.dto.etc;
+package com.taskmanager.myapp.dto.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

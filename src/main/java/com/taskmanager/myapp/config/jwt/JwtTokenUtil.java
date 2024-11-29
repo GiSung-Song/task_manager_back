@@ -1,6 +1,9 @@
 package com.taskmanager.myapp.config.jwt;
 
+import com.taskmanager.myapp.domain.Users;
 import com.taskmanager.myapp.exception.CustomInternalException;
+import com.taskmanager.myapp.exception.ResourceNotfoundException;
+import com.taskmanager.myapp.repository.UsersRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -29,13 +32,16 @@ public class JwtTokenUtil {
     private final SecretKey secretKey;
     private final Long accessTokenExpiration;
     private final Long refreshTokenExpiration;
+    private final UsersRepository usersRepository;
 
     public JwtTokenUtil(@Value("${jwt.secretKey}") String secretKey,
                         @Value("${jwt.access.expiration}") Long accessTokenExpiration,
-                        @Value("${jwt.refresh.expiration}") Long refreshTokenExpiration) {
+                        @Value("${jwt.refresh.expiration}") Long refreshTokenExpiration,
+                        UsersRepository usersRepository) {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secretKey));
         this.accessTokenExpiration = accessTokenExpiration;
         this.refreshTokenExpiration = refreshTokenExpiration;
+        this.usersRepository = usersRepository;
     }
 
     public Long getRefreshTokenExpiration() {
@@ -45,13 +51,39 @@ public class JwtTokenUtil {
     public String generateAccessToken(String employeeNumber) {
         log.info(">>> Generate Access Token <<<");
 
-        return createToken(ACCESS_TOKEN_SUBJECT, employeeNumber, accessTokenExpiration);
+        Users user = usersRepository.findByEmployeeNumber(employeeNumber);
+
+        if (user == null) {
+            throw new ResourceNotfoundException("User not found with employee number");
+        }
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(TOKEN_CLAIM, employeeNumber);
+        claims.put("department", user.getDepartment().getDepartmentName());
+        claims.put("level", user.getRole().getLevel());
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(ACCESS_TOKEN_SUBJECT)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(new Date().getTime() + accessTokenExpiration))
+                .signWith(secretKey)
+                .compact();
     }
 
     public String generateRefreshToken(String employeeNumber) {
         log.info(">>> Generate Refresh Token <<<");
 
-        return createToken(REFRESH_TOKEN_SUBJECT, employeeNumber, refreshTokenExpiration);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(TOKEN_CLAIM, employeeNumber);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(REFRESH_TOKEN_SUBJECT)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(new Date().getTime() + refreshTokenExpiration))
+                .signWith(secretKey)
+                .compact();
     }
 
     public String extractEmployeeNumber(String token) {
@@ -135,19 +167,6 @@ public class JwtTokenUtil {
             return true;
         }
 
-    }
-
-    private String createToken(String subject, String claim, Long expiration) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(TOKEN_CLAIM, claim);
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + expiration))
-                .signWith(secretKey)
-                .compact();
     }
 
 }

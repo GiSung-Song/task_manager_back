@@ -2,8 +2,8 @@ package com.taskmanager.myapp.service;
 
 import com.taskmanager.myapp.config.jwt.JwtTokenUtil;
 import com.taskmanager.myapp.domain.Users;
-import com.taskmanager.myapp.dto.etc.LoginRequestDto;
-import com.taskmanager.myapp.dto.etc.TokenDto;
+import com.taskmanager.myapp.dto.auth.LoginRequestDto;
+import com.taskmanager.myapp.dto.auth.TokenDto;
 import com.taskmanager.myapp.exception.CustomAuthException;
 import com.taskmanager.myapp.exception.CustomBadRequestException;
 import com.taskmanager.myapp.repository.UsersRepository;

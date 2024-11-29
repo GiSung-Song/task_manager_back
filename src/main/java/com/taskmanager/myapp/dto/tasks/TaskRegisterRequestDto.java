@@ -32,5 +32,7 @@ public class TaskRegisterRequestDto {
     @ValidEnum(enumClass = TaskType.class)
     private String taskType;
 
+    private LocalDateTime startDate;
+
     private LocalDateTime deadline;
 }

@@ -35,6 +35,7 @@ public class TasksService {
         TaskStatus taskStatus = dto.getTaskStatus() != null ? TaskStatus.valueOf(dto.getTaskStatus()) : TaskStatus.PENDING;
         TaskPriority priority = dto.getTaskPriority() != null ? TaskPriority.valueOf(dto.getTaskPriority()) : TaskPriority.MEDIUM;
         TaskType taskType = dto.getTaskType() != null ? TaskType.valueOf(dto.getTaskType()) : TaskType.PERSONAL;
+        LocalDateTime startDate = dto.getStartDate() != null ? dto.getStartDate() : LocalDateTime.now();
         LocalDateTime deadline = dto.getDeadline() != null ? dto.getDeadline() : LocalDateTime.now().plusDays(1);
 
         // Role Level 3이하면 부서 전체 업무 추가 불가능
@@ -50,6 +51,7 @@ public class TasksService {
                 .status(taskStatus)
                 .priority(priority)
                 .taskType(taskType)
+                .startDate(startDate)
                 .deadline(deadline)
                 .user(user)
                 .department(user.getDepartment())
@@ -66,11 +68,13 @@ public class TasksService {
         List<Tasks> tasksList = tasksRepository.findAllTask(user.getId(), dto.getStartDate(), dto.getEndDate());
         List<TaskResponseDto> tasksDtoList = tasksList.stream()
                 .map(task -> new TaskResponseDto(
+                        task.getId(),
                         task.getTitle(),
                         task.getDescription(),
                         task.getStatus(),
                         task.getPriority(),
                         task.getTaskType(),
+                        task.getStartDate(),
                         task.getDeadline(),
                         user.getUsername(),
                         department.getDepartmentName()

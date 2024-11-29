@@ -16,11 +16,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class TaskResponseDto {
 
+    private Long taskId;
     private String title;
     private String description;
     private TaskStatus taskStatus;
     private TaskPriority priority;
     private TaskType taskType;
+    private LocalDateTime startDate;
     private LocalDateTime deadline;
     private String owner;
     private String department;

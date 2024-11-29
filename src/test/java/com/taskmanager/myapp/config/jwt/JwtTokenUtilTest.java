@@ -1,10 +1,20 @@
 package com.taskmanager.myapp.config.jwt;
 
+import com.taskmanager.myapp.domain.Departments;
+import com.taskmanager.myapp.domain.Roles;
+import com.taskmanager.myapp.domain.Users;
+import com.taskmanager.myapp.repository.UsersRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class JwtTokenUtilTest {
 
     private JwtTokenUtil jwtTokenUtil;
@@ -13,15 +23,30 @@ class JwtTokenUtilTest {
     private Long accessTokenExpiration = 1000 * 5L; // 5초
     private Long refreshTokenExpiration = 1000 * 60 * 60 * 24 * 7L; // 7일
 
+    @Mock
+    private UsersRepository usersRepository;
+
     @BeforeEach
     void setUp() {
-        jwtTokenUtil = new JwtTokenUtil(secret, accessTokenExpiration, refreshTokenExpiration);
+        jwtTokenUtil = new JwtTokenUtil(secret, accessTokenExpiration, refreshTokenExpiration, usersRepository);
+
+        Users user = Users.builder()
+                .id(0L)
+                .role(Roles.createRoles("부장", 4))
+                .department(Departments.createDepartments("HR1팀"))
+                .username("테스터")
+                .phoneNumber("01012345678")
+                .employeeNumber("1234")
+                .password("password")
+                .build();
+
+        when(usersRepository.findByEmployeeNumber(anyString())).thenReturn(user);
     }
 
     @Test
     void access_token_생성_테스트() {
-        String employeNumber = "12345";
-        String accessToken = jwtTokenUtil.generateAccessToken(employeNumber);
+        String employeeNumber = "12345";
+        String accessToken = jwtTokenUtil.generateAccessToken(employeeNumber);
 
         assertNotNull(accessToken);
         assertTrue(accessToken.startsWith("ey"));

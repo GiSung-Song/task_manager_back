@@ -37,6 +37,7 @@ public class Tasks {
     @Column(nullable = false)
     private TaskType taskType;
 
+    private LocalDateTime startDate;
     private LocalDateTime deadline;
 
     @ManyToOne

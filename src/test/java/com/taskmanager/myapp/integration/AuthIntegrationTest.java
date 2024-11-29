@@ -5,7 +5,7 @@ import com.taskmanager.myapp.config.jwt.JwtTokenUtil;
 import com.taskmanager.myapp.domain.Departments;
 import com.taskmanager.myapp.domain.Roles;
 import com.taskmanager.myapp.domain.Users;
-import com.taskmanager.myapp.dto.etc.LoginRequestDto;
+import com.taskmanager.myapp.dto.auth.LoginRequestDto;
 import com.taskmanager.myapp.repository.DepartmentsRepository;
 import com.taskmanager.myapp.repository.RolesRepository;
 import com.taskmanager.myapp.repository.UsersRepository;
@@ -134,6 +134,7 @@ public class AuthIntegrationTest {
     @Test
     void 토큰_재발급_실패_테스트() throws Exception {
         String refreshToken = jwtTokenUtil.generateRefreshToken("1234");
+        redisTemplate.delete("1234");
 
         mockMvc.perform(post("/api/refresh")
                         .cookie(new Cookie("refreshToken", refreshToken)))

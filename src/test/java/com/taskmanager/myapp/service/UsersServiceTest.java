@@ -384,9 +384,9 @@ class UsersServiceTest {
         when(securityService.getLoginUser()).thenReturn(user);
         when(usersRepository.findByEmployeeNumber(anyString())).thenReturn(user);
 
-        usersService.resetPassword("1234");
+        String resetPassword = usersService.resetPassword("1234");
 
-        assertNotEquals(passwordEncoder.encode("password"), user.getPassword());
+        assertEquals(passwordEncoder.encode(resetPassword), user.getPassword());
     }
 
     @Test

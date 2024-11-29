@@ -90,11 +90,11 @@ class TasksControllerTest {
     void 업무_조회_테스트() throws Exception {
         TaskResponseDto taskResponseDto1 =
                 new TaskResponseDto("테스트 제목1", "테스트 설명1", TaskStatus.COMPLETED, TaskPriority.LOW, TaskType.PERSONAL,
-                        LocalDateTime.now().plusDays(2), "테스터", "개발1팀");
+                        LocalDateTime.now(), LocalDateTime.now().plusDays(2), "테스터", "개발1팀");
 
         TaskResponseDto taskResponseDto2 =
                 new TaskResponseDto("테스트 제목2", "테스트 설명2", TaskStatus.PENDING, TaskPriority.MEDIUM, TaskType.TEAM,
-                        LocalDateTime.now().plusDays(9), "테스터", "개발1팀");
+                        LocalDateTime.now(), LocalDateTime.now().plusDays(9), "테스터", "개발1팀");
 
         List<TaskResponseDto> dto = List.of(taskResponseDto1, taskResponseDto2);
 
