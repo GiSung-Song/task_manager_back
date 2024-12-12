@@ -89,12 +89,12 @@ class TasksControllerTest {
     @Test
     void 업무_조회_테스트() throws Exception {
         TaskResponseDto taskResponseDto1 =
-                new TaskResponseDto("테스트 제목1", "테스트 설명1", TaskStatus.COMPLETED, TaskPriority.LOW, TaskType.PERSONAL,
-                        LocalDateTime.now(), LocalDateTime.now().plusDays(2), "테스터", "개발1팀");
+                new TaskResponseDto(0L, "테스트 제목1", "테스트 설명1", TaskStatus.COMPLETED, TaskPriority.LOW, TaskType.PERSONAL,
+                        LocalDateTime.now(), LocalDateTime.now().plusDays(2), "테스터", "15-1212", "개발1팀");
 
         TaskResponseDto taskResponseDto2 =
-                new TaskResponseDto("테스트 제목2", "테스트 설명2", TaskStatus.PENDING, TaskPriority.MEDIUM, TaskType.TEAM,
-                        LocalDateTime.now(), LocalDateTime.now().plusDays(9), "테스터", "개발1팀");
+                new TaskResponseDto(1L, "테스트 제목2", "테스트 설명2", TaskStatus.PENDING, TaskPriority.MEDIUM, TaskType.TEAM,
+                        LocalDateTime.now(), LocalDateTime.now().plusDays(9), "테스터", "13-1234", "개발1팀");
 
         List<TaskResponseDto> dto = List.of(taskResponseDto1, taskResponseDto2);
 
@@ -105,8 +105,8 @@ class TasksControllerTest {
         when(tasksService.getAllTask(any())).thenReturn(dto);
 
         mockMvc.perform(get("/api/task")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(taskDateDto)))
+                        .param("startDate", taskResponseDto1.getStartDate().toString())
+                        .param("endDate", taskResponseDto2.getDeadline().toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].title").value("테스트 제목1"))
                 .andExpect(jsonPath("$.data[1].title").value("테스트 제목2"))
@@ -117,7 +117,7 @@ class TasksControllerTest {
     void 업무_수정_테스트() throws Exception {
         TaskUpdateRequestDto dto = new TaskUpdateRequestDto();
 
-        dto.setStatus("PENDING");
+        dto.setTaskStatus("PENDING");
 
         mockMvc.perform(patch("/api/task/{id}", 0L)
                 .contentType(MediaType.APPLICATION_JSON)

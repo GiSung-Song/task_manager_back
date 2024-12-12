@@ -5,14 +5,18 @@ import com.taskmanager.myapp.global.CustomResponse;
 import com.taskmanager.myapp.service.TasksService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Slf4j
 public class TasksController {
 
     private final TasksService tasksService;
@@ -22,12 +26,25 @@ public class TasksController {
     public ResponseEntity<CustomResponse<String>> addTask(@RequestBody @Valid TaskRegisterRequestDto dto) {
         tasksService.addTask(dto);
 
+        log.info("start date : {}", dto.getStartDate());
+        log.info("end date : {}", dto.getDeadline());
+
         return ResponseEntity.ok(CustomResponse.res(null, "업무를 등록했습니다."));
     }
 
     // 업무 조회 - 해당 월 별
     @GetMapping("/task")
-    public ResponseEntity<CustomResponse<List<TaskResponseDto>>> getTaskList(TaskDateDto dto) {
+    public ResponseEntity<CustomResponse<List<TaskResponseDto>>> getTaskList(
+            @RequestParam String startDate, @RequestParam String endDate) {
+
+        LocalDateTime start = LocalDateTime.parse(startDate, DateTimeFormatter.ISO_DATE_TIME);
+        LocalDateTime end = LocalDateTime.parse(endDate, DateTimeFormatter.ISO_DATE_TIME);
+
+        TaskDateDto dto = new TaskDateDto();
+
+        dto.setStartDate(start);
+        dto.setEndDate(end);
+
         List<TaskResponseDto> allTask = tasksService.getAllTask(dto);
 
         return ResponseEntity.ok(CustomResponse.res(allTask, "업무를 조회했습니다."));

@@ -22,5 +22,5 @@ public class TaskUpdateRequestDto {
     private LocalDateTime deadline;
 
     @ValidEnum(enumClass = TaskStatus.class)
-    private String status;
+    private String taskStatus;
 }

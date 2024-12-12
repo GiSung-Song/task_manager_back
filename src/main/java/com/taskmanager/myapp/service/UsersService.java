@@ -3,10 +3,7 @@ package com.taskmanager.myapp.service;
 import com.taskmanager.myapp.domain.Departments;
 import com.taskmanager.myapp.domain.Roles;
 import com.taskmanager.myapp.domain.Users;
-import com.taskmanager.myapp.dto.users.UserInfoResponseDto;
-import com.taskmanager.myapp.dto.users.UserInfoUpdateRequestDto;
-import com.taskmanager.myapp.dto.users.UserPasswordRequestDto;
-import com.taskmanager.myapp.dto.users.UserRegisterRequestDto;
+import com.taskmanager.myapp.dto.users.*;
 import com.taskmanager.myapp.exception.CustomBadRequestException;
 import com.taskmanager.myapp.exception.CustomDeniedException;
 import com.taskmanager.myapp.exception.DataConflictException;
@@ -114,7 +111,7 @@ public class UsersService {
 
     // 회원 비밀번호 초기화
     @Transactional
-    public String resetPassword(String employeeNumber) {
+    public UserResetPasswordResponseDto resetPassword(String employeeNumber) {
         Users user = securityService.getLoginUser();
         Users findUser = usersRepository.findByEmployeeNumber(employeeNumber);
 
@@ -128,7 +125,11 @@ public class UsersService {
                 String password = randomPassword();
                 findUser.updatePassword(passwordEncoder.encode(password));
 
-                return password;
+                UserResetPasswordResponseDto dto = new UserResetPasswordResponseDto();
+
+                dto.setPassword(password);
+
+                return dto;
             }
         }
 

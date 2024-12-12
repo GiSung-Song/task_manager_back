@@ -76,7 +76,8 @@ public class TasksService {
                         task.getTaskType(),
                         task.getStartDate(),
                         task.getDeadline(),
-                        user.getUsername(),
+                        task.getUser().getUsername(),
+                        task.getUser().getEmployeeNumber(),
                         department.getDepartmentName()
                 ))
                 .collect(Collectors.toList());
@@ -93,6 +94,8 @@ public class TasksService {
 
         if (StringUtils.hasText(dto.getDescription())) {
             task.updateDescription(dto.getDescription());
+        } else {
+            task.updateDescription("");
         }
 
         if (StringUtils.hasText(dto.getPriority())) {
@@ -103,8 +106,8 @@ public class TasksService {
             task.updateDeadline(dto.getDeadline());
         }
 
-        if (StringUtils.hasText(dto.getStatus())) {
-            task.updateStatus(TaskStatus.valueOf(dto.getStatus()));
+        if (StringUtils.hasText(dto.getTaskStatus())) {
+            task.updateStatus(TaskStatus.valueOf(dto.getTaskStatus()));
         }
     }
 

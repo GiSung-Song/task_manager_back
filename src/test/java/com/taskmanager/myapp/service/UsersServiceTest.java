@@ -3,10 +3,7 @@ package com.taskmanager.myapp.service;
 import com.taskmanager.myapp.domain.Departments;
 import com.taskmanager.myapp.domain.Roles;
 import com.taskmanager.myapp.domain.Users;
-import com.taskmanager.myapp.dto.users.UserInfoResponseDto;
-import com.taskmanager.myapp.dto.users.UserInfoUpdateRequestDto;
-import com.taskmanager.myapp.dto.users.UserPasswordRequestDto;
-import com.taskmanager.myapp.dto.users.UserRegisterRequestDto;
+import com.taskmanager.myapp.dto.users.*;
 import com.taskmanager.myapp.exception.CustomBadRequestException;
 import com.taskmanager.myapp.exception.CustomDeniedException;
 import com.taskmanager.myapp.exception.DataConflictException;
@@ -384,9 +381,9 @@ class UsersServiceTest {
         when(securityService.getLoginUser()).thenReturn(user);
         when(usersRepository.findByEmployeeNumber(anyString())).thenReturn(user);
 
-        String resetPassword = usersService.resetPassword("1234");
+        UserResetPasswordResponseDto dto = usersService.resetPassword("1234");
 
-        assertEquals(passwordEncoder.encode(resetPassword), user.getPassword());
+        assertEquals(passwordEncoder.encode(dto.getPassword()), user.getPassword());
     }
 
     @Test

@@ -10,7 +10,9 @@ import java.util.List;
 
 public interface TasksRepository extends JpaRepository<Tasks, Long> {
 
-    @Query("SELECT t FROM Tasks t JOIN t.user u WHERE u.id = :userId OR (t.department.id = u.department.id AND t.taskType = 'TEAM')" +
+    @Query("SELECT t FROM Tasks t JOIN t.user u " +
+            "WHERE (u.id = :userId " +
+            "OR (t.department.id = (SELECT u.department.id FROM Users u WHERE u.id = :userId) AND t.taskType = 'TEAM')) " +
             "AND t.deadline BETWEEN :startDate AND :endDate")
     List<Tasks> findAllTask(@Param("userId") Long userId,
                             @Param("startDate") LocalDateTime startDate,

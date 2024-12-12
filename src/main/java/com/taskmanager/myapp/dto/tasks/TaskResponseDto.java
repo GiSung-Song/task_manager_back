@@ -25,5 +25,6 @@ public class TaskResponseDto {
     private LocalDateTime startDate;
     private LocalDateTime deadline;
     private String owner;
+    private String ownerEmployeeNumber;
     private String department;
 }

@@ -1,9 +1,6 @@
 package com.taskmanager.myapp.controller;
 
-import com.taskmanager.myapp.dto.users.UserInfoResponseDto;
-import com.taskmanager.myapp.dto.users.UserInfoUpdateRequestDto;
-import com.taskmanager.myapp.dto.users.UserPasswordRequestDto;
-import com.taskmanager.myapp.dto.users.UserRegisterRequestDto;
+import com.taskmanager.myapp.dto.users.*;
 import com.taskmanager.myapp.global.CustomResponse;
 import com.taskmanager.myapp.service.UsersService;
 import jakarta.validation.Valid;
@@ -44,10 +41,10 @@ public class UsersController {
 
     // 회원 비밀번호 초기화
     @PostMapping("/users/{employeeNumber}/reset")
-    public ResponseEntity<CustomResponse<String>> updatePassword(@PathVariable String employeeNumber) {
-        String tempPassword = usersService.resetPassword(employeeNumber);
+    public ResponseEntity<CustomResponse<UserResetPasswordResponseDto>> resetPassword(@PathVariable String employeeNumber) {
+        UserResetPasswordResponseDto dto = usersService.resetPassword(employeeNumber);
 
-        return ResponseEntity.ok(CustomResponse.res(tempPassword, "비밀번호를 초기화했습니다."));
+        return ResponseEntity.ok(CustomResponse.res(dto, "비밀번호를 초기화했습니다."));
     }
 
     @PostMapping("/users")
