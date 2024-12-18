@@ -208,7 +208,7 @@ public class TaskIntegrationTest {
     void 업무_조회_테스트() throws Exception {
         mockMvc.perform(get("/api/task")
                         .param("startDate", LocalDateTime.now().toString())
-                        .param("endDate", task1.getDeadline().toString()))
+                        .param("endDate", task1.getDeadline().plusDays(3).toString()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].title").value("테스트 제목"))

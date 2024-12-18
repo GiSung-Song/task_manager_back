@@ -1,0 +1,62 @@
+name: Push Backend Docker Image
+
+on:
+  push:
+    branches:
+      - main # main branch에 변경사항이 생겼을 시 실행됨
+
+  workflow_dispatch: # 수동 실행
+
+  jobs:
+    build-and-deploy:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout Backend Repository
+          uses: actions/checkout@v4
+
+        - name: Set up JDK 17
+          uses: actions/setup-java@v4
+          with:
+            java-version: '17'
+            distribution: 'temurin'
+
+        - name: Cache Gradle Package # gradle caching 많이 변경되지 않는 의존성 파일들을 캐싱하여 속도 향상
+          id: cache-gradle
+          uses: actions/cache@v3
+          with:
+            path: ~/.gradle/caches
+            key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }} # 의존성 파일의 해시를 기반으로 캐시 키 설정
+            restore-keys: |
+              ${{ runner.os }}-gradle-
+
+        - name: Setup Gradle
+          if: steps.cache-gradle.outputs.cache-hit == 'false'
+          uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+
+        - name: Grant Execute Permission for gradlew
+          run: chmod +x ./gradlew
+
+        - name: Build Backend without Test
+          run: ./gradlew clean build -x test
+
+        - name: Docker Login # Docker Login
+          uses: docker/login-action@v2
+          with:
+            username: ${{ secrets.DOCKERHUB_USERNAME }}
+            password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+        - name: Build Docker Image
+          run: |
+            docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_BACKEND }} .
+
+        - name: Push Backend Docker Image
+          run: |
+            docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_BACKEND }}
+
+        - name: Execute Centralized Repository
+          run: |
+            curl -X POST \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -d '{"event_type": "backend-update"}' \
+              https://api.github.com/repos/GiSung-Song/task_manager_cicd/dispatches
