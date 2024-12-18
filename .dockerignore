@@ -1,0 +1,13 @@
+# Gradle 빌드
+.gradle/
+build/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+
+# Dockerfile
+Dockerfile
