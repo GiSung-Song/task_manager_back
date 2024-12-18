@@ -57,6 +57,6 @@ jobs:
       - name: Execute Centralized Repository
         run: |
           curl -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: token ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
             -d '{"event_type": "backend-update"}' \
             https://api.github.com/repos/GiSung-Song/task_manager_cicd/dispatches
