@@ -38,4 +38,5 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
 
-allowed.origin=${FRONTEND_ORIGIN}
+allowed:
+    origin: ${FRONTEND_ORIGIN}
